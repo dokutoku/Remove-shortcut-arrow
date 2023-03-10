@@ -1,0 +1,36 @@
+name: Create-resource
+
+on:
+    push:
+        branches:
+        - master
+
+    workflow_dispatch:
+
+jobs:
+    Windows:
+        runs-on: windows-2022
+
+        steps:
+        - name: checkout
+          uses: actions/checkout@v3
+
+        - name: Create resource
+          shell: cmd
+          run: |
+            set __VSCMD_ARG_NO_LOGO=1
+            call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+            rc /n /nologo rc\clear-icon-cache.rc
+            rc /n /nologo rc\remove-shortcut-arrow.rc
+            rc /n /nologo rc\restore-shortcut-arrow.rc
+            mkdir new-res
+            move /y rc\clear-icon-cache.res new-res\clear-icon-cache.res
+            move /y rc\remove-shortcut-arrow.res new-res\remove-shortcut-arrow.res
+            move /y rc\restore-shortcut-arrow.res new-res\restore-shortcut-arrow.res
+
+        - name: Upload artifact
+          uses: actions/upload-artifact@v3
+          with:
+              name: new-res
+              path: |
+                new-res

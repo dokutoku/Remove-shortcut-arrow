@@ -1,0 +1,73 @@
+{
+	"name": "remove-shortcut-arrow",
+	"description": "Remove arrows from Windows shortcut icons.",
+	"authors": ["dokutoku"],
+	"copyright": "Copyright © 2022, dokutoku",
+	"homepage": "https://gitlab.com/dokutoku/remove-shortcut-arrow",
+	"license": "CC0",
+	"buildTypes":
+	{
+		"betterC-plain": {"buildOptions": ["betterC"]},
+		"betterC-debug": {"buildOptions": ["betterC", "debugMode", "debugInfo"]},
+		"betterC-release": {"buildOptions": ["betterC", "releaseMode", "optimize", "inline"]},
+		"betterC-release-debug": {"buildOptions": ["betterC", "releaseMode", "optimize", "inline", "debugInfo"]},
+		"betterC-release-nobounds": {"buildOptions": ["betterC", "releaseMode", "optimize", "inline", "noBoundsCheck"]},
+		"betterC-syntax": {"buildOptions": ["betterC", "syntaxOnly"]}
+	},
+	"configurations":
+	[
+		{
+			"name": "library",
+			"targetPath": "lib",
+			"targetType": "library",
+			"versions-windows": ["Windows2003"]
+		},
+		{
+			"name": "remove-shortcut-arrow",
+			"platforms": ["windows"],
+			"targetPath": "bin",
+			"targetType": "executable",
+			"targetName": "remove-shortcut-arrow",
+			"versions": ["REMOVE_SHORTCUT_ARROW"],
+			"versions-windows": ["Windows2003"],
+			"dflags-ldc": ["--flto=full"],
+			"lflags-windows":
+			[
+				"/MANIFEST:embed",
+				"/MANIFESTUAC:level='requireAdministrator' uiAccess='false'"
+			],
+			"sourceFiles-windows": ["res/remove-shortcut-arrow.res"]
+		},
+		{
+			"name": "restore-shortcut-arrow",
+			"platforms": ["windows"],
+			"targetPath": "bin",
+			"targetType": "executable",
+			"targetName": "restore-shortcut-arrow",
+			"versions": ["RESTORE_SHORTCUT_ARROW"],
+			"versions-windows": ["Windows2003"],
+			"dflags-ldc": ["--flto=full"],
+			"lflags-windows":
+			[
+				"/MANIFEST:embed",
+				"/MANIFESTUAC:level='requireAdministrator' uiAccess='false'"
+			],
+			"sourceFiles-windows": ["res/restore-shortcut-arrow.res"]
+		},
+		{
+			"name": "clear-icon-cache",
+			"platforms": ["windows"],
+			"targetPath": "bin",
+			"targetType": "executable",
+			"targetName": "clear-icon-cache",
+			"versions": ["CLEAR_ICON_CACHE"],
+			"versions-windows": ["Windows2003"],
+			"dflags-ldc": ["--flto=full"],
+			"sourceFiles-windows": ["res/clear-icon-cache.res"]
+		},
+		{
+			"name": "sourceLibrary",
+			"targetType": "sourceLibrary"
+		}
+	]
+}

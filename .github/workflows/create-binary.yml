@@ -1,0 +1,149 @@
+name: Create-binary
+
+on:
+    push:
+        branches:
+        - master
+
+    workflow_dispatch:
+
+jobs:
+    Windows:
+        runs-on: windows-2022
+
+        strategy:
+            matrix:
+                build-type: [betterC-release-nobounds]
+
+        steps:
+        - name: Start Time
+          id: start-time
+          run: |
+            $current_time = php -r "echo (new DateTimeImmutable('now', new DateTimeZone('UTC')))->format('Y-m-d H:i:sP');";
+            echo $current_time;
+
+        - name: Init get-dlang
+          run: |
+            mkdir ~/get-dlang;
+            cd ~/get-dlang;
+            git init;
+            git remote add origin 'https://gitlab.com/dokutoku/get-dlang.git';
+            git config --local core.sparsecheckout true;
+            git config --local core.autocrlf false;
+
+        - name: Fetch get-dlang
+          run: |
+            cd ~/get-dlang;
+            echo '/dmd-version.txt' >> '.git/info/sparse-checkout';
+            echo '/ldc2-version.txt' >> '.git/info/sparse-checkout';
+            echo '/template/powershell/install-dmd.ps1' >> '.git/info/sparse-checkout';
+            echo '/template/powershell/install-ldc2.ps1' >> '.git/info/sparse-checkout';
+            echo '/dmd-version.txt.sig' >> '.git/info/sparse-checkout';
+            echo '/ldc2-version.txt.sig' >> '.git/info/sparse-checkout';
+            echo '/template/powershell/install-dmd.ps1.sig' >> '.git/info/sparse-checkout';
+            echo '/template/powershell/install-ldc2.ps1.sig' >> '.git/info/sparse-checkout';
+            git fetch --depth=1 origin master;
+
+        - name: Reset get-dlang
+          run: |
+            cd ~/get-dlang;
+            git reset --hard origin/master;
+
+        - name: log get-dlang
+          run: |
+            cd ~/get-dlang;
+            git log -1;
+
+        - name: Show get-dlang hashes
+          run: |
+            cd ~/get-dlang;
+            (Get-ChildItem -Recurse -File).FullName | ForEach-Object { openssl sha512 $_;}
+
+        - name: Verify get-dlang files
+          run: |
+            cd ~/get-dlang;
+            Write-Output "-----BEGIN PUBLIC KEY-----`nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA2Mgmj1IMcTe4ZD0nH5Hj`nHTHdcj2S9I8eIpSYl0DdPGzQcLN06eOX+n4MhOo886NQTfBATVAjyGZy500/8JT3`n7wk/we8yRcxAzW18GjUtqiLW8nvSK7tsqPAO8AWJNldYKwM3xTNo0hZW3G5xlkSw`n0ixMlHTffQ2JxPv4xDgBlKUAndzGIPHGhPiPnPbOOS5tOYaWLk3wtXERJpnv4chx`nCNgJc+uY2RTZWQDLCfjJAi4kce+8lkxaIHHSUrRRtjHdTTvPVCg9EWaX53u8MAFf`nf2S9+6+CdrvKe3+IOppI5cfFZtw4rLWqhrg5tVI7JLIVjx2ioZ5cvR6tzNKKGJcw`nD71vrqGWY6BuGRCaVOGAL/grmw3p4EPGPyxmDCsAsWztdWx9EyHNKtI8zfCFEWBx`noGDHjMYUEtF+acVJAhAb7dqgQ8RTebIuQipxlpSLC7BZMHm72SE2TqixIWLSsgAJ`n7NMv0PhReU+payF+3JsKgZRXkIaD/hgdh/Lz2Cr5iEOKAes1Rh2j6Wx9BYrY7Sbi`ncOfOXduCKQ04siLr1JGt8ZdsmCRhM7GavgtF+WsZav1kCHotVDsVJD1VOQOIdxMQ`n1i2AFC69JTIl395UtO4MaKxNO8lbTF9lefOjp80q+HailSbkJpOvrRBG1S3k5PmE`n3d9rSpiJtcLimKRfGrdYh68CAwEAAQ==`n-----END PUBLIC KEY-----" | Out-File public.pem -Encoding ascii;
+            (Get-ChildItem -Recurse -File -include *.ps1,*.sh,*.conf,*.yml,*.txt).FullName | ForEach-Object { openssl dgst -sha512 -verify public.pem -signature $_'.sig' $_; }
+
+        - name: Install ldc2
+          run: |
+            cd ~/;
+            Powershell -ExecutionPolicy Bypass -File 'get-dlang/template/powershell/install-ldc2.ps1';
+
+        - name: Show ldc2 versions
+          run: |
+            C:\ldc2\bin\ldc2.exe --version
+            C:\ldc2\bin\dub.exe --version
+
+        - name: checkout
+          uses: actions/checkout@v3
+
+        - name: ldc2 x86 build
+          shell: cmd
+          run: |
+            set __VSCMD_ARG_NO_LOGO=1
+            call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86
+            C:\ldc2\bin\dub.exe build --force --combined --build-mode=allAtOnce --config=clear-icon-cache --arch=x86 --build=${{ matrix.build-type }} --compiler=C:\ldc2\bin\ldc2.exe
+            C:\ldc2\bin\dub.exe build --force --combined --build-mode=allAtOnce --config=remove-shortcut-arrow --arch=x86 --build=${{ matrix.build-type }} --compiler=C:\ldc2\bin\ldc2.exe
+            C:\ldc2\bin\dub.exe build --force --combined --build-mode=allAtOnce --config=restore-shortcut-arrow --arch=x86 --build=${{ matrix.build-type }} --compiler=C:\ldc2\bin\ldc2.exe
+            dumpbin /dependents bin\clear-icon-cache.exe
+            dumpbin /dependents bin\remove-shortcut-arrow.exe
+            dumpbin /dependents bin\restore-shortcut-arrow.exe
+            move bin bin32
+
+        - name: ldc2 x64 build
+          shell: cmd
+          run: |
+            set __VSCMD_ARG_NO_LOGO=1
+            call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+            C:\ldc2\bin\dub.exe build --force --combined --build-mode=allAtOnce --config=clear-icon-cache --arch=x86_64 --build=${{ matrix.build-type }} --compiler=C:\ldc2\bin\ldc2.exe
+            C:\ldc2\bin\dub.exe build --force --combined --build-mode=allAtOnce --config=remove-shortcut-arrow --arch=x86_64 --build=${{ matrix.build-type }} --compiler=C:\ldc2\bin\ldc2.exe
+            C:\ldc2\bin\dub.exe build --force --combined --build-mode=allAtOnce --config=restore-shortcut-arrow --arch=x86_64 --build=${{ matrix.build-type }} --compiler=C:\ldc2\bin\ldc2.exe
+            dumpbin /dependents bin\clear-icon-cache.exe
+            dumpbin /dependents bin\remove-shortcut-arrow.exe
+            dumpbin /dependents bin\restore-shortcut-arrow.exe
+            move bin bin64
+
+        - name: Create x86 zip
+          run: |
+            mkdir 'remove-shortcut-arrow';
+            mkdir 'remove-shortcut-arrow\bin';
+            robocopy /e /s 'bin32\' 'remove-shortcut-arrow\bin\';
+            cp 'LICENSE' 'remove-shortcut-arrow\';
+            cp 'README.md' 'remove-shortcut-arrow\';
+            cp 'README-ja.md' 'remove-shortcut-arrow\';
+            7z a 'remove-shortcut-arrow-x86.zip' 'remove-shortcut-arrow';
+            Remove-Item 'remove-shortcut-arrow' -Force -Recurse;
+
+        - name: Create x64 zip
+          run: |
+            mkdir 'remove-shortcut-arrow';
+            mkdir 'remove-shortcut-arrow\bin';
+            robocopy /e /s 'bin64\' 'remove-shortcut-arrow\bin\';
+            cp 'LICENSE' 'remove-shortcut-arrow\';
+            cp 'README.md' 'remove-shortcut-arrow\';
+            cp 'README-ja.md' 'remove-shortcut-arrow\';
+            7z a 'remove-shortcut-arrow-x64.zip' 'remove-shortcut-arrow';
+            Remove-Item 'remove-shortcut-arrow' -Force -Recurse;
+
+        - name: Create Hash
+          run: |
+            php -r "file_put_contents('SHA256SUMS', hash_file('sha256', 'remove-shortcut-arrow-x86.zip').'  '.'remove-shortcut-arrow-x86.zip'.chr(0x0A), FILE_APPEND);"
+            php -r "file_put_contents('SHA512SUMS', hash_file('sha512', 'remove-shortcut-arrow-x86.zip').'  '.'remove-shortcut-arrow-x86.zip'.chr(0x0A), FILE_APPEND);"
+            php -r "file_put_contents('SHA3-256SUMS', hash_file('sha3-256', 'remove-shortcut-arrow-x86.zip').'  '.'remove-shortcut-arrow-x86.zip'.chr(0x0A), FILE_APPEND);"
+            php -r "file_put_contents('SHA3-512SUMS', hash_file('sha3-512', 'remove-shortcut-arrow-x86.zip').'  '.'remove-shortcut-arrow-x86.zip'.chr(0x0A), FILE_APPEND);"
+            php -r "file_put_contents('SHA256SUMS', hash_file('sha256', 'remove-shortcut-arrow-x64.zip').'  '.'remove-shortcut-arrow-x64.zip'.chr(0x0A), FILE_APPEND);"
+            php -r "file_put_contents('SHA512SUMS', hash_file('sha512', 'remove-shortcut-arrow-x64.zip').'  '.'remove-shortcut-arrow-x64.zip'.chr(0x0A), FILE_APPEND);"
+            php -r "file_put_contents('SHA3-256SUMS', hash_file('sha3-256', 'remove-shortcut-arrow-x64.zip').'  '.'remove-shortcut-arrow-x64.zip'.chr(0x0A), FILE_APPEND);"
+            php -r "file_put_contents('SHA3-512SUMS', hash_file('sha3-512', 'remove-shortcut-arrow-x64.zip').'  '.'remove-shortcut-arrow-x64.zip'.chr(0x0A), FILE_APPEND);"
+
+        - name: Upload artifact
+          uses: actions/upload-artifact@v3
+          with:
+              path: |
+                remove-shortcut-arrow-x86.zip
+                remove-shortcut-arrow-x64.zip
+                SHA256SUMS
+                SHA512SUMS
+                SHA3-256SUMS
+                SHA3-512SUMS
