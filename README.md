@@ -29,7 +29,7 @@ This application does not display any messages at all for the following reasons
 If you want to know if the execution is successful or not, enter the following command via the command prompt
 
 ```cmd
-start /wait remove-shortcut-arrow32.exe
+start /wait remove-shortcut-arrow.exe
 echo %ERRORLEVEL%
 ```
 

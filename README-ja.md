@@ -29,7 +29,7 @@ Windowsのショートカットの矢印を消すためには特定のレジス�
 もし実行の成否が知りたければ、コマンドプロンプト経由で以下のコマンドを入力します。
 
 ```cmd
-start /wait remove-shortcut-arrow32.exe
+start /wait remove-shortcut-arrow.exe
 echo %ERRORLEVEL%
 ```
 
