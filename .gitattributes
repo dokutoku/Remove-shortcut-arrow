@@ -1,4 +1,6 @@
-* text=auto eol=lf
 *.d text eol=lf
+*.h text eol=lf
+*.json text eol=lf
 *.md text eol=lf
-*.rc text eol=lf
+*.rc working-tree-encoding=UTF-16LE-BOM eol=LF
+*.yml text eol=lf
