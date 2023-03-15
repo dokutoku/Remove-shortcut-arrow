@@ -37,7 +37,10 @@ echo %ERRORLEVEL%
 
 ## バグ報告
 
-エラーが起きてその症状を改善して欲しい場合は、[バグ報告専用ページ](https://gitlab.com/dokutoku/remove-shortcut-arrow/-/issues)でエラーの内容を報告してください。
+エラーが起きてその症状を改善して欲しい場合は、以下のいずれかの方法でエラーの内容を報告してください。
+
+- プロジェクトの[Issue](https://gitlab.com/dokutoku/remove-shortcut-arrow/-/issues)で新規課題を生成する
+- バグ報告専用アドレスである"contact-project+dokutoku-remove-shortcut-arrow-bug@incoming.gitlab.com"にバグの内容をメールで送信する
 
 報告する場合は、以下の項目を忘れずに入力してください。
 

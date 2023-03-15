@@ -37,7 +37,10 @@ If you see 0, it has completed successfully.
 
 ## Report a bug
 
-If you encounter an error and would like us to correct the symptom, please report the error on the [dedicated bug report page](https://gitlab.com/dokutoku/remove-shortcut-arrow/-/issues).
+If an error occurs and you would like us to correct the symptom, please report the error in one of the following ways
+
+- Generate a new issue at [Issue](https://gitlab.com/dokutoku/remove-shortcut-arrow/-/issues) in the project
+- Send an email to "contact-project+dokutoku-remove-shortcut-arrow-bug@incoming.gitlab.com", the address dedicated to bug reports
 
 When reporting, please remember to complete the following fields.
 
