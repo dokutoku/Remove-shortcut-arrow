@@ -14,19 +14,19 @@ You must have administrator privileges to run the application.
 1. Double-click on remove-shortcut-arrow.exe in the bin directory
 2. If you get a Windows Smart Screen warning, go to "More Info" -> "Run anyway" and allow it to run
 3. If asked to do so with administrative privileges, select "Yes"
-4. Once executed, log out and log in again and the arrow will disappear.
+4. Once executed, log out and log in again and the arrow will disappear
 
 If you want to restore the arrow, run restore-shortcut-arrow.exe and do the same.
 
 ## About Errors
 
-This application does not display any messages at all for the following reasons
+This application does not display any messages at all for the following reasons.
 
-1. reduce program dependencies so that it can be run in as many different environments and situations as possible
-2. to reduce program size
-3. as long as you have sufficient permissions, execution usually does not fail.
+1. Reduce program dependencies so that it can be run in as many different environments and situations as possible
+2. To reduce program size
+3. As long as you have sufficient permissions, execution usually does not fail.
 
-If you want to know if the execution is successful or not, enter the following command via the command prompt
+If you want to know if the execution is successful or not, enter the following command via the command prompt.
 
 ```cmd
 start /wait remove-shortcut-arrow.exe
@@ -37,7 +37,7 @@ If you see 0, it has completed successfully.
 
 ## Report a bug
 
-If an error occurs and you would like us to correct the symptom, please report the error in one of the following ways
+If an error occurs and you would like us to correct the symptom, please report the error in one of the following ways.
 
 - Generate a new issue at [Issue](https://gitlab.com/dokutoku/remove-shortcut-arrow/-/issues) in the project
 - Send an email to "contact-project+dokutoku-remove-shortcut-arrow-bug@incoming.gitlab.com", the address dedicated to bug reports
