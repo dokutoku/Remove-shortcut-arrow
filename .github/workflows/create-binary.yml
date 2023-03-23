@@ -45,7 +45,7 @@ jobs:
             cd ~/get-dlang;
             git reset --hard origin/master;
 
-        - name: log get-dlang
+        - name: Show latest commit of get-dlang
           run: |
             cd ~/get-dlang;
             git log -1;
@@ -71,14 +71,14 @@ jobs:
             C:\ldc2\bin\ldc2.exe --version
             C:\ldc2\bin\dub.exe --version
 
-        - name: checkout
+        - name: Checkout
           uses: actions/checkout@v3
 
         - name: ldc2 x86 build
           shell: cmd
           run: |
             set __VSCMD_ARG_NO_LOGO=1
-            call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86
+            call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86 -vcvars_spectre_libs=spectre
             C:\ldc2\bin\dub.exe build --force --combined --build-mode=allAtOnce --config=clear-icon-cache --arch=x86 --build=${{ matrix.build-type }} --compiler=C:\ldc2\bin\ldc2.exe
             C:\ldc2\bin\dub.exe build --force --combined --build-mode=allAtOnce --config=remove-shortcut-arrow --arch=x86 --build=${{ matrix.build-type }} --compiler=C:\ldc2\bin\ldc2.exe
             C:\ldc2\bin\dub.exe build --force --combined --build-mode=allAtOnce --config=restore-shortcut-arrow --arch=x86 --build=${{ matrix.build-type }} --compiler=C:\ldc2\bin\ldc2.exe
@@ -91,7 +91,7 @@ jobs:
           shell: cmd
           run: |
             set __VSCMD_ARG_NO_LOGO=1
-            call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+            call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64 -vcvars_spectre_libs=spectre
             C:\ldc2\bin\dub.exe build --force --combined --build-mode=allAtOnce --config=clear-icon-cache --arch=x86_64 --build=${{ matrix.build-type }} --compiler=C:\ldc2\bin\ldc2.exe
             C:\ldc2\bin\dub.exe build --force --combined --build-mode=allAtOnce --config=remove-shortcut-arrow --arch=x86_64 --build=${{ matrix.build-type }} --compiler=C:\ldc2\bin\ldc2.exe
             C:\ldc2\bin\dub.exe build --force --combined --build-mode=allAtOnce --config=restore-shortcut-arrow --arch=x86_64 --build=${{ matrix.build-type }} --compiler=C:\ldc2\bin\ldc2.exe
