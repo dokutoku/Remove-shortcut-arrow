@@ -24,7 +24,7 @@ This application does not display any messages at all for the following reasons.
 
 1. Reduce program dependencies so that it can be run in as many different environments and situations as possible
 2. To reduce program size
-3. As long as you have sufficient permissions, execution usually does not fail.
+3. As long as you have sufficient permissions, execution usually does not fail
 
 If you want to know if the execution is successful or not, enter the following command via the command prompt.
 
